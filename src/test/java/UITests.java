@@ -1,39 +1,39 @@
 import io.qameta.allure.Step;
 import org.junit.*;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import ru.lastfm.UI.Actions.HeaderLogInActions;
-import ru.lastfm.UI.MainPage;
+import ru.lastfm.UI.Actions.HeaderLogOutActions;
 
 import java.util.concurrent.TimeUnit;
 
 public class UITests {
+    private static final String MAIN_URL = "https://www.last.fm/";
+    private static final String DRIVER = "webdriver.gecko.driver";
+    private static final String DRIVER_PATH = "C:\\projects\\Selenium\\Firefox\\geckodriver\\geckodriver.exe";
+
     private WebDriver driver;
-    private MainPage mainPage;
-    private HeaderLogInActions header;
-    private final String MAIN_URL = "https://www.last.fm/";
+    private HeaderLogOutActions headerLogOut;
+    private HeaderLogInActions headerLogIn;
 
     @BeforeClass
     public static void setUp() {
-        System.setProperty("webdriver.gecko.driver", "C:\\projects\\Selenium\\Firefox\\geckodriver\\geckodriver.exe");
+        System.setProperty(DRIVER, DRIVER_PATH);
     }
 
     @Before
     public void startTest(){
         driver = new FirefoxDriver();
-        mainPage = new MainPage(driver);
-        header = new HeaderLogInActions(driver);
         driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
         driver.manage().window().maximize();
+        headerLogIn = new HeaderLogInActions(driver);
+        headerLogOut = new HeaderLogOutActions(driver);
         driver.get(MAIN_URL);
     }
 
     @After
     public void endTest(){
-
-
-        //logoutStep();//добавить шаг с логаутом
+        //logoutStep();//добавить шаг с логаутом? вроде и сам выходит..
         driver.quit();
     }
 
@@ -45,21 +45,20 @@ public class UITests {
 
     @Test
     public void searchAnySong(){
-        loginStep("DanilTaGiL","hS83.qdYkw8K_me");
+//        loginStep("DanilTaGiL","hS83.qdYkw8K_me");
         searchTracksStep("Noize MC");
     }
 
     @Test
     public void searchAnyAlbums(){
-        loginStep("DanilTaGiL","hS83.qdYkw8K_me");
+//        loginStep("DanilTaGiL","hS83.qdYkw8K_me");
         searchAlbumStep("Noize MC");
     }
 
-
     @Step
     public void loginStep(String username, String password){
-        mainPage.clickLoginButton().typeUsername(username).typePassword(password).clickSubmitForm();
-        Assert.assertTrue(header.isLogIn());
+        headerLogOut.clickLoginButton().typeUsername(username).typePassword(password).clickSubmitForm();
+        Assert.assertTrue(headerLogIn.isLogIn());
     }
 
     @Step
@@ -69,19 +68,17 @@ public class UITests {
         //доступ к элементам, которые необходимы для выполнения этого шага.
         //Поэтому решил сделать отдельный класс с методами, которые будут взаимодействовать с хеддером.
 
-        header.clickLogoutButtonAction();
-        //проверить, вышли ли мы
+        headerLogIn.clickLogoutButtonAction();
+        Assert.assertTrue(headerLogOut.isLogOut()); //проверить, вышли ли мы
     }
-
 
     @Step
     public void searchTracksStep(String text){
-        header.searchSmth(text).getTracksPage();
-        //проверить поле с текстом на наличие там текста запроса
+        Assert.assertTrue(headerLogIn.searchSmth(text).getTracksPage().isFindedTrack(text));
     }
 
     @Step
     public void searchAlbumStep(String text){
-        header.searchSmth(text).getAlbumsPage();
+        Assert.assertTrue(headerLogIn.searchSmth(text).getAlbumsPage().isFindedAlbum(text));
     }
 }

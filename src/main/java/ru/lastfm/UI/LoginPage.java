@@ -12,6 +12,7 @@ public class LoginPage {
 
     private By usernameField = By.xpath("//*[@id=\"id_username\"]");
     private By passwordField = By.xpath("//*[@id=\"id_password\"]");
+
     private By submitButton = By.xpath("//*[@id=\"login\"]/div[3]/div/button");
 
     public LoginPage typeUsername(String username){
