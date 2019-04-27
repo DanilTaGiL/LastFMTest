@@ -4,36 +4,30 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
 import ru.lastfm.REST.API;
-import ru.lastfm.REST.APIMethods;
-
-import java.util.HashMap;
-import java.util.concurrent.TimeUnit;
-
 
 
 public class RESTTests {
-    private final String API_URL = "http://www.last.fm/api";
     private final String DRIVER = "webdriver.gecko.driver";
     private final String DRIVER_PATH = "C:\\projects\\Selenium\\Firefox\\geckodriver\\geckodriver.exe";
 
-    private String apiToken;
+    public static String apiToken = API.getToken();
     private WebDriver driver;
+    private UITests UI;
+
 
 
     @Before
     public void beforeTest(){
-//        System.setProperty(DRIVER, DRIVER_PATH);
-//        driver = new FirefoxDriver();
-//        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-//        driver.manage().window().maximize();
+
+        UI = new UITests();
     }
 
 
     @Test
     public void loginAndLogoutTest(){
-        API.getToken();
+        authorizationStep();
+        System.out.println(API.getSessionKey(apiToken));
     }
 
     @Step
@@ -41,9 +35,12 @@ public class RESTTests {
 
     }
 
+
     @Step
-    public void getTokenStep(){
-        Assert.assertTrue(apiToken.length() != 0);
+    public void authorizationStep(){
+        UI.startTest();
+        UI.tokenAuthorize();
+        UI.quit();
     }
 
 

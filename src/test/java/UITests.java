@@ -2,8 +2,10 @@ import io.qameta.allure.Step;
 import org.junit.*;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import ru.lastfm.REST.API;
 import ru.lastfm.UI.Actions.HeaderLogInActions;
 import ru.lastfm.UI.Actions.HeaderLogOutActions;
+import ru.lastfm.UI.ConnectApplicationPage;
 
 import java.util.concurrent.TimeUnit;
 
@@ -29,7 +31,7 @@ public class UITests {
     }
 
     @After
-    public void endTest(){
+    public void quit(){
         //logoutStep();//добавить шаг с логаутом? вроде и сам выходит..
         driver.quit();
     }
@@ -50,6 +52,15 @@ public class UITests {
     public void searchAnyAlbums(){
 //        loginStep("DanilTaGiL","hS83.qdYkw8K_me");
         searchAlbumStep("Noize MC");
+    }
+
+    @Ignore
+    @Test
+    public void tokenAuthorize(){
+        loginStep("DanilTaGiL","hS83.qdYkw8K_me");
+        driver.get(API.API_URL + "/auth/?api_key=" + API.API_KEY + "&token=" + RESTTests.apiToken);
+        ConnectApplicationPage yes = new ConnectApplicationPage(driver);
+        yes.clickYesButton();
     }
 
     @Step
