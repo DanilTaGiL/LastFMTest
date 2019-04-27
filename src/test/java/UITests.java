@@ -8,21 +8,18 @@ import ru.lastfm.UI.Actions.HeaderLogOutActions;
 import java.util.concurrent.TimeUnit;
 
 public class UITests {
-    private static final String MAIN_URL = "https://www.last.fm/";
-    private static final String DRIVER = "webdriver.gecko.driver";
-    private static final String DRIVER_PATH = "C:\\projects\\Selenium\\Firefox\\geckodriver\\geckodriver.exe";
+    private final String MAIN_URL = "https://www.last.fm/";
+    private final String DRIVER = "webdriver.gecko.driver";
+    private final String DRIVER_PATH = "C:\\projects\\Selenium\\Firefox\\geckodriver\\geckodriver.exe";
 
     private WebDriver driver;
     private HeaderLogOutActions headerLogOut;
     private HeaderLogInActions headerLogIn;
 
-    @BeforeClass
-    public static void setUp() {
-        System.setProperty(DRIVER, DRIVER_PATH);
-    }
 
     @Before
     public void startTest(){
+        System.setProperty(DRIVER, DRIVER_PATH);
         driver = new FirefoxDriver();
         driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
         driver.manage().window().maximize();
