@@ -1,4 +1,4 @@
-package ru.lastfm.UI.Actions;
+package ru.lastfm.UI.actions;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;

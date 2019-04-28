@@ -1,43 +1,75 @@
 import io.qameta.allure.Step;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.openqa.selenium.WebDriver;
 import ru.lastfm.REST.API;
+import ru.lastfm.REST.models.search.Album;
+import ru.lastfm.REST.models.search.Track;
+
+import java.util.List;
 
 
 public class RESTTests {
+    public static String apiToken = API.getToken();
+
     private final String DRIVER = "webdriver.gecko.driver";
     private final String DRIVER_PATH = "C:\\projects\\Selenium\\Firefox\\geckodriver\\geckodriver.exe";
 
-    public static String apiToken = API.getToken();
-    private WebDriver driver;
-    private UITests UI;
+
+    private UITests UI = new UITests();
+    private String sessionKey = "6VqWqnTUKk1DYkTHsOM3b1VNQzkp1AMf";
 
 
 
     @Before
     public void beforeTest(){
-
-        UI = new UITests();
+        Assert.assertTrue(apiToken.length() != 0);
     }
 
 
     @Test
     public void loginAndLogoutTest(){
-        authorizationStep();
-        System.out.println(API.getSessionKey(apiToken));
-    }
-
-    @Step
-    public void loginStep(){
+        tokenAuthorizationStep(); //now we have session_key(sk)
+        System.out.println("Token: " + apiToken);
+        sessionKey = API.getSession(apiToken).getKey();
+        System.out.println(sessionKey);
 
     }
 
+    @Test
+    public void searchAnySong(){
+//        List<Track> list = API.findTracks("Noize MC", 4);
+//        for(Track t:list) System.out.println(t);
+//        Assert.assertTrue(list.get(0).getName().equals("Вселенная бесконечна?"));
+
+//        tokenAuthorizationStep();
+//        sessionKey = API.getSession(apiToken).getKey();
+
+        Track track = new Track();
+        track.setName("Вселенная бесконечна?");
+        track.setArtist("Noize MC");
+        loveTrackStep(track);
+    }
+
+    @Test
+    public void searchAnyAlbum(){
+        List<Album> album = API.findAlbum("Noize MC", 4);
+        for(Album a:album) System.out.println(a);
+    }
+
+    @Test
+    public void lastFMAPI(){
+
+
+    }
 
     @Step
-    public void authorizationStep(){
+    public void loveTrackStep(Track track){
+        API.loveTrack(track, sessionKey);
+    }
+
+    @Step
+    public void tokenAuthorizationStep(){
         UI.startTest();
         UI.tokenAuthorize();
         UI.quit();

@@ -3,8 +3,8 @@ import org.junit.*;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import ru.lastfm.REST.API;
-import ru.lastfm.UI.Actions.HeaderLogInActions;
-import ru.lastfm.UI.Actions.HeaderLogOutActions;
+import ru.lastfm.UI.actions.HeaderLogInActions;
+import ru.lastfm.UI.actions.HeaderLogOutActions;
 import ru.lastfm.UI.ConnectApplicationPage;
 
 import java.util.concurrent.TimeUnit;
@@ -61,6 +61,7 @@ public class UITests {
         driver.get(API.API_URL + "/auth/?api_key=" + API.API_KEY + "&token=" + RESTTests.apiToken);
         ConnectApplicationPage yes = new ConnectApplicationPage(driver);
         yes.clickYesButton();
+        logoutStep();
     }
 
     @Step
