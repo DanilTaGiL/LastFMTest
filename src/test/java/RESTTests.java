@@ -1,6 +1,5 @@
 import io.qameta.allure.Step;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import ru.lastfm.REST.API;
 import ru.lastfm.REST.models.search.Album;
@@ -12,60 +11,45 @@ import java.util.List;
 public class RESTTests {
     public static String apiToken = API.getToken();
 
-    private final String DRIVER = "webdriver.gecko.driver";
-    private final String DRIVER_PATH = "C:\\projects\\Selenium\\Firefox\\geckodriver\\geckodriver.exe";
-
-
     private UITests UI = new UITests();
-    private String sessionKey = "6VqWqnTUKk1DYkTHsOM3b1VNQzkp1AMf";
-
-
-
-    @Before
-    public void beforeTest(){
-        Assert.assertTrue(apiToken.length() != 0);
-    }
+    private String sessionKey;
 
 
     @Test
     public void loginAndLogoutTest(){
-        tokenAuthorizationStep(); //now we have session_key(sk)
-        System.out.println("Token: " + apiToken);
-        sessionKey = API.getSession(apiToken).getKey();
-        System.out.println(sessionKey);
-
+        Assert.assertTrue(apiToken.length() != 0);
+        tokenAuthorizationStep();
+        getSessionKeyStep();
     }
 
     @Test
     public void searchAnySong(){
-//        List<Track> list = API.findTracks("Noize MC", 4);
-//        for(Track t:list) System.out.println(t);
-//        Assert.assertTrue(list.get(0).getName().equals("Вселенная бесконечна?"));
+        List<Track> tracks = API.findTracks("Noize MC", 4);
+        for(Track t:tracks) System.out.println(t);
 
-//        tokenAuthorizationStep();
-//        sessionKey = API.getSession(apiToken).getKey();
+        Track compare = new Track("Вселенная бесконечна?","Noize MC",
+                "https://www.last.fm/music/Noize+MC/_/%D0%92%D1%81%D0%B5%D0%BB%D0%B5%D0%BD%D0%BD%D0%B0%D1%8F+%D0%B1%D0%B5%D1%81%D0%BA%D0%BE%D0%BD%D0%B5%D1%87%D0%BD%D0%B0%3F",
+                "FIXME", 34049, null ,"17dc7806-1ac0-4a3a-af91-5bd1416f53d4");
 
-        Track track = new Track();
-        track.setName("Вселенная бесконечна?");
-        track.setArtist("Noize MC");
-        loveTrackStep(track);
+        Assert.assertEquals(compare, tracks.get(0));
     }
 
     @Test
     public void searchAnyAlbum(){
-        List<Album> album = API.findAlbum("Noize MC", 4);
-        for(Album a:album) System.out.println(a);
-    }
+        List<Album> albums = API.findAlbum("Noize MC", 4);
+        for(Album a:albums) System.out.println(a);
 
-    @Test
-    public void lastFMAPI(){
+        Album compare = new Album("Новый альбом", "Noize MC",
+                "https://www.last.fm/music/Noize+MC/%D0%9D%D0%BE%D0%B2%D1%8B%D0%B9+%D0%B0%D0%BB%D1%8C%D0%B1%D0%BE%D0%BC",
+                "0", null, "8faa0140-377f-453d-9e47-b08244ef48ba");
 
-
+        Assert.assertEquals(compare, albums.get(0));
     }
 
     @Step
-    public void loveTrackStep(Track track){
-        API.loveTrack(track, sessionKey);
+    public void getSessionKeyStep(){
+        sessionKey = API.getSession(apiToken).getKey();
+        Assert.assertTrue(sessionKey.length() != 0);
     }
 
     @Step
@@ -74,6 +58,4 @@ public class RESTTests {
         UI.tokenAuthorize();
         UI.quit();
     }
-
-
 }

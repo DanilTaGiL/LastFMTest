@@ -3,6 +3,7 @@ package ru.lastfm.REST.models.search;
 import ru.lastfm.REST.models.Image;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 public class Album {
     private String name;
@@ -81,5 +82,22 @@ public class Album {
                 ", image=" + Arrays.toString(image) +
                 ", mbid='" + mbid + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Album album = (Album) o;
+        return Objects.equals(name, album.name) &&
+                Objects.equals(artist, album.artist) &&
+                Objects.equals(url, album.url) &&
+                Objects.equals(streamable, album.streamable) &&
+                Objects.equals(mbid, album.mbid);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, artist, url, streamable, mbid);
     }
 }

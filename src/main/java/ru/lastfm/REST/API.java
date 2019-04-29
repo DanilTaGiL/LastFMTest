@@ -1,11 +1,8 @@
 package ru.lastfm.REST;
 
-import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.json.JSONObject;
 import ru.lastfm.REST.models.Session;
 import ru.lastfm.REST.models.SessionResponse;
 import ru.lastfm.REST.models.search.Album;
@@ -25,15 +22,12 @@ public class API {
         Response response = given().
                 param("method","auth.getToken").
                 param("api_key",API_KEY).
-                param("api_sig", getSignature("method", "auth.getToken")).
                 param("format","json").
                 header("User","Agent").
                 when().get(API_ROOT).
                 then().assertThat().
                 statusCode(200).contentType(ContentType.JSON).
                 extract().response();
-
-        response.prettyPrint();
 
         return response.thenReturn().path("token") .toString();
     }
@@ -43,7 +37,7 @@ public class API {
                 param("method", "auth.getSession").
                 param("token", token).
                 param("api_key", API_KEY).
-                param("api_sig", getSignature("method", "auth.getSession","token", token)).
+                param("api_sig", getSignature("api_key", API_KEY, "method", "auth.getSession","token", token)).
                 param("format","json").
                 header("User","Agent").
                 when().get(API_ROOT).
@@ -52,6 +46,7 @@ public class API {
                 extract().response();
 
         SessionResponse sr = response.as(SessionResponse.class);
+
         return sr.getSession();
     }
 
@@ -64,6 +59,7 @@ public class API {
                     getObject("results.trackmatches.track[" + i + "]", Track.class);
             out.add(track);
         }
+
         return out;
     }
 
@@ -76,49 +72,10 @@ public class API {
                     getObject("results.albummatches.album[" + i + "]", Album.class);
             out.add(album);
         }
+
         return out;
     }
 
-    public static void loveTrack(Track track, String sk){
-//        JSONObject request = new JSONObject();
-//        request.put("method", "track.love");
-//        request.put("api_key", API_KEY);
-//        request.put("api_sig", getSignature(
-//                "api_key" , API_KEY,
-//                "artist", track.getArtist(),
-//                "method", "track.love",
-//                "sk", sk,
-//                "track", track.getName()));
-//        request.put("artist", track.getArtist());
-//        request.put("sk", sk);
-//        request.put("track", track.getName());
-//        request.put("format","json");
-//
-//        RequestSpecification req = RestAssured.given();
-//        req.header("Content-Type", "application/json");
-//        req.body(request.toString());
-
-
-
-
-        Response response = //req.post(API_ROOT);
-                given().
-                param("api_sig", getSignature(
-                        "api_key" , API_KEY,
-                        "artist", track.getArtist(),
-                        "method", "track.love",
-                        "sk", sk,
-                        "track", track.getName())).
-                param("api_key", API_KEY).
-                param("artist", track.getArtist()).
-                param("method", "track.love").
-                param("sk", sk).
-                param("track", track.getName()).
-                param("format","json").
-                header("User","Agent").
-                when().post(API_ROOT);
-        response.prettyPrint();
-    }
 
     private static Response findSmth(String searchRequest, String searchType, int count) {
         Response response = given().
@@ -137,13 +94,30 @@ public class API {
 
     private static String getSignature(String... params){
         StringBuilder signature = new StringBuilder();
-        System.out.println(signature);
-        for (String s : params) {
-            signature.append(s);
-            System.out.println(s);
-        }
+        for (String s : params) signature.append(s);
         signature.append("f73c250d816de1a2d1ffa7dd89c71e0d");
-        System.out.println(DigestUtils.md5Hex(signature.toString()));
         return DigestUtils.md5Hex(signature.toString());
+    }
+
+    private static void loveTrack(Track track, String sk){
+        //что-то не ок явно, ибо порядок расположения параметров для составления сигнатуры соблюден, по алфавиту,
+        //но всё равно еррор 13 - неправильная сигнатура метода. Однако при получении сессии всё ок с сигнатурой
+        Response response =
+                given().
+                        param("api_sig", getSignature(
+                                "api_key" , API_KEY,
+                                "artist", track.getArtist(),
+                                "method", "track.love",
+                                "sk", sk,
+                                "track", track.getName())).
+                        param("api_key", API_KEY).
+                        param("artist", track.getArtist()).
+                        param("method", "track.love").
+                        param("sk", sk).
+                        param("track", track.getName()).
+                        param("format","json").
+                        header("User","Agent").
+                        when().post(API_ROOT);
+        response.prettyPrint();
     }
 }

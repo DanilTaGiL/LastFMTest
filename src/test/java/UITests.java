@@ -32,7 +32,6 @@ public class UITests {
 
     @After
     public void quit(){
-        //logoutStep();//добавить шаг с логаутом? вроде и сам выходит..
         driver.quit();
     }
 
@@ -44,13 +43,11 @@ public class UITests {
 
     @Test
     public void searchAnySong(){
-//        loginStep("DanilTaGiL","hS83.qdYkw8K_me");
         searchTracksStep("Noize MC");
     }
 
     @Test
     public void searchAnyAlbums(){
-//        loginStep("DanilTaGiL","hS83.qdYkw8K_me");
         searchAlbumStep("Noize MC");
     }
 
@@ -61,7 +58,6 @@ public class UITests {
         driver.get(API.API_URL + "/auth/?api_key=" + API.API_KEY + "&token=" + RESTTests.apiToken);
         ConnectApplicationPage yes = new ConnectApplicationPage(driver);
         yes.clickYesButton();
-        logoutStep();
     }
 
     @Step
@@ -72,13 +68,8 @@ public class UITests {
 
     @Step
     public void logoutStep(){
-        //По факту, если мы залогинены, то у нас почти на всех страницах этого сайта всегда одинаковый хеддер.
-        //И поэтому мы можем в любой момент выполнить этот шаг, так как с такими условиями всегда имеем
-        //доступ к элементам, которые необходимы для выполнения этого шага.
-        //Поэтому решил сделать отдельный класс с методами, которые будут взаимодействовать с хеддером.
-
         headerLogIn.clickLogoutButtonAction();
-        Assert.assertTrue(headerLogOut.isLogOut()); //проверить, вышли ли мы
+        Assert.assertTrue(headerLogOut.isLogOut());
     }
 
     @Step
